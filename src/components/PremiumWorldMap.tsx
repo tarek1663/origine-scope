@@ -12,6 +12,7 @@ export interface PremiumWorldMapProps {
 }
 
 export function PremiumWorldMap({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   regionPercentages,
   shares = [],
   className = "",

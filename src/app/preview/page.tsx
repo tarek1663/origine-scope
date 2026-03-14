@@ -653,7 +653,7 @@ function PreviewContent() {
                 style={{ fontSize: 120, opacity: 0.12, fontFamily: "var(--font-playfair), 'Playfair Display', serif", lineHeight: 1 }}
                 aria-hidden
               >
-                "
+                &quot;
               </span>
               {/* SVG border draw on load */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none preview-card-border-draw" preserveAspectRatio="none">

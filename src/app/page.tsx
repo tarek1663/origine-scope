@@ -1,4 +1,5 @@
 import { Marquee } from '@/components/ui/3d-testimonials';
+import Image from "next/image";
 import Link from "next/link";
 import { FadeInSection } from "@/components/FadeInSection";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
@@ -21,7 +22,7 @@ const EARTH_IMAGE_URL =
     return (
       <div className="w-72 rounded-xl border border-white/10 bg-[#1a1f2e] p-5 mx-2 transition-all duration-300 hover:border-white/20 hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5">
         <div className="flex items-center gap-3 mb-3">
-          <img src={img} alt={name} className="w-10 h-10 rounded-full object-cover ring-2 ring-white/10 flex-shrink-0" />
+          <Image src={img} alt={name} width={40} height={40} className="w-10 h-10 rounded-full object-cover ring-2 ring-white/10 flex-shrink-0" />
           <div className="min-w-0">
             <p className="text-white text-[15px] font-medium truncate">{name} <span className="text-xs opacity-60">{country}</span></p>
             <p className="text-white/40 text-xs truncate">{username}</p>
