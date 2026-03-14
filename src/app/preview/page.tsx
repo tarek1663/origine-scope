@@ -106,6 +106,8 @@ function PreviewContent() {
   const [isPaid, setIsPaid] = useState(false);
   const [showPaidConfetti, setShowPaidConfetti] = useState(false);
   const [profileShares, setProfileShares] = useState<Array<{ name: string; picture: string }>>([]);
+  const [nameAnalysis, setNameAnalysis] = useState<Record<string, unknown> | null>(null);
+  const [nameLoading, setNameLoading] = useState(true);
   const nameSectionRef = useRef<HTMLDivElement>(null);
   const blob1Ref = useRef<HTMLDivElement>(null);
   const blob2Ref = useRef<HTMLDivElement>(null);
@@ -131,6 +133,44 @@ function PreviewContent() {
       pct[s.key] = s.percentage;
     });
     setRegionPercentages(pct);
+  }, []);
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem(FORM_STORAGE_KEY) : null;
+    let lastName = "";
+    let firstName = "";
+    let fatherCountry = "Unknown";
+    let motherCountry = "Unknown";
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        lastName = parsed.lastName || "";
+        firstName = parsed.firstName || "";
+        fatherCountry = parsed.fatherCountry || "Unknown";
+        motherCountry = parsed.motherCountry || "Unknown";
+      } catch {}
+    }
+    if (!lastName) {
+      lastName = typeof window !== "undefined" ? (localStorage.getItem("origineScope_lastName") || localStorage.getItem("lastName") || "") : "";
+      firstName = typeof window !== "undefined" ? (localStorage.getItem("origineScope_firstName") || localStorage.getItem("firstName") || "") : "";
+      fatherCountry = typeof window !== "undefined" ? (localStorage.getItem("origineScope_fatherCountry") || localStorage.getItem("fatherCountry") || "Unknown") : "Unknown";
+      motherCountry = typeof window !== "undefined" ? (localStorage.getItem("origineScope_motherCountry") || localStorage.getItem("motherCountry") || "Unknown") : "Unknown";
+    }
+    if (lastName) {
+      fetch("/api/analyze-name", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lastName, firstName, fatherCountry, motherCountry }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data.error) setNameAnalysis(data);
+          setNameLoading(false);
+        })
+        .catch(() => setNameLoading(false));
+    } else {
+      setNameLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -690,10 +730,10 @@ function PreviewContent() {
                   Notable ancestors
                 </h3>
                 <ul className="space-y-2">
-                  {(isPaid && shares?.[0]
+                  {(Array.isArray(nameAnalysis?.notableAncestors) ? nameAnalysis.notableAncestors : (isPaid && shares?.[0]
                     ? NOTABLE_ANCESTORS_BY_REGION[shares[0].region] ?? NOTABLE_ANCESTORS_BY_REGION["Other regions"]
-                    : ["A historical figure from your roots", "Another ancestor in your line", "A third notable name"]
-                  ).map((name, i) => (
+                    : ["A historical figure from your roots", "Another ancestor in your line", "A third notable name"])
+                  ).map((name: string, i: number) => (
                     <li
                       key={i}
                       className="text-white/70 text-sm select-none"
@@ -811,77 +851,114 @@ function PreviewContent() {
             </span>
           </div>
 
-          {/* Timeline — 14px circles, 6px inner, connecting path animation */}
+          {/* Timeline — dynamic from nameAnalysis or skeleton */}
           <div className="relative mb-10">
-            <div className="absolute top-[7px] left-0 right-0 h-px flex z-0 gap-0">
-              <div className="flex-1 h-full overflow-hidden"><div className="preview-timeline-path-seg h-full bg-white/15" style={{ animationDelay: "0.2s" }} /></div>
-              <div className="flex-1 h-full overflow-hidden"><div className="preview-timeline-path-seg h-full bg-white/15" style={{ animationDelay: "0.6s" }} /></div>
-              <div className="flex-1 h-full overflow-hidden"><div className="preview-timeline-path-seg h-full bg-white/15" style={{ animationDelay: "1s" }} /></div>
-            </div>
-            <div className="grid grid-cols-4 gap-0 relative">
-              {[
-                { year: "~800 AD", label: "First recorded in", place: "Iberian Peninsula 🇪🇸", color: "#C1440E", blurred: false },
-                { year: "~1200 AD", label: "Spread across", place: "Mediterranean Coast 🌊", color: "#C1440E", blurred: false },
-                { year: "~1600 AD", label: "Migration to", place: "Atlantic regions", color: "#F59E0B", blurred: true },
-                { year: "~1900 AD", label: "Modern presence in", place: "Global diaspora", color: "rgba(255,255,255,0.5)", blurred: true },
-              ].map((node, i) => (
-                <div key={i} className="flex flex-col items-center text-center group">
-                  <div
-                    className="w-[14px] h-[14px] rounded-full flex-shrink-0 relative z-10 flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-                    style={{
-                      backgroundColor: "rgba(255,255,255,0.2)",
-                      border: `2px solid ${node.color}`,
-                      boxShadow: node.color === "#C1440E" ? "0 0 12px rgba(193, 68, 14, 0.3)" : undefined,
-                    }}
-                  >
-                    <div className="w-[6px] h-[6px] rounded-full" style={{ backgroundColor: node.color }} />
+            {nameLoading ? (
+              <div className="grid grid-cols-4 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="flex flex-col items-center gap-2">
+                    <div className="w-[14px] h-[14px] rounded-full bg-white/20 animate-pulse" />
+                    <div className="h-3 w-16 rounded bg-white/10 animate-pulse" />
+                    <div className="h-3 w-20 rounded bg-white/10 animate-pulse" />
+                    <div className="h-4 w-24 rounded bg-white/10 animate-pulse" />
                   </div>
-                  <p className="text-white/50 text-[11px] mt-2">{node.year}</p>
-                  <p className="text-white/40 text-[11px] mt-0.5">{node.label}</p>
-                  <p className="text-white text-[13px] font-semibold mt-1 flex items-center justify-center gap-1.5">
-                    {node.blurred && !isPaid ? (
-                      <>
-                        <span className="select-none" style={{ filter: "blur(5px)", userSelect: "none" }}>{node.place}</span>
-                        <span className="flex-shrink-0" aria-hidden>🔒</span>
-                      </>
-                    ) : (
-                      node.place
-                    )}
-                  </p>
+                ))}
+              </div>
+            ) : (
+              <>
+                <div className="absolute top-[7px] left-0 right-0 h-px flex z-0 gap-0">
+                  <div className="flex-1 h-full overflow-hidden"><div className="preview-timeline-path-seg h-full bg-white/15" style={{ animationDelay: "0.2s" }} /></div>
+                  <div className="flex-1 h-full overflow-hidden"><div className="preview-timeline-path-seg h-full bg-white/15" style={{ animationDelay: "0.6s" }} /></div>
+                  <div className="flex-1 h-full overflow-hidden"><div className="preview-timeline-path-seg h-full bg-white/15" style={{ animationDelay: "1s" }} /></div>
                 </div>
-              ))}
-            </div>
+                <div className="grid grid-cols-4 gap-0 relative">
+                  {[
+                    { year: nameAnalysis?.firstRecordedYear ?? "~800 AD", label: "First recorded in", place: nameAnalysis?.firstRecordedPlace ?? "—", color: "#C1440E", blurred: false },
+                    { year: nameAnalysis?.spreadYear ?? "~1200 AD", label: "Spread across", place: nameAnalysis?.spreadPlace ?? "—", color: "#C1440E", blurred: false },
+                    { year: "~1600 AD", label: "Migration to", place: nameAnalysis?.migrationDestination1 ?? "—", color: "#F59E0B", blurred: true },
+                    { year: "~1900 AD", label: "Modern presence in", place: nameAnalysis?.migrationDestination2 ?? "—", color: "rgba(255,255,255,0.5)", blurred: true },
+                  ].map((node, i) => (
+                    <div key={i} className="flex flex-col items-center text-center group">
+                      <div
+                        className="w-[14px] h-[14px] rounded-full flex-shrink-0 relative z-10 flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                        style={{
+                          backgroundColor: "rgba(255,255,255,0.2)",
+                          border: `2px solid ${node.color}`,
+                          boxShadow: node.color === "#C1440E" ? "0 0 12px rgba(193, 68, 14, 0.3)" : undefined,
+                        }}
+                      >
+                        <div className="w-[6px] h-[6px] rounded-full" style={{ backgroundColor: node.color }} />
+                      </div>
+                      <p className="text-white/50 text-[11px] mt-2">{node.year}</p>
+                      <p className="text-white/40 text-[11px] mt-0.5">{node.label}</p>
+                      <p className="text-white text-[13px] font-semibold mt-1 flex items-center justify-center gap-1.5">
+                        {node.blurred && !isPaid ? (
+                          <>
+                            <span className="select-none" style={{ filter: "blur(5px)", userSelect: "none" }}>{node.place}</span>
+                            <span className="flex-shrink-0" aria-hidden>🔒</span>
+                          </>
+                        ) : (
+                          node.place
+                        )}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Stat pills */}
           <div className="flex flex-wrap gap-3 mb-6">
-            <span className="px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-white text-sm font-medium">
-              📍 Origin region : {shares?.[0]?.region || "Southern Europe"}
-            </span>
-            <span className={`px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-white text-sm font-medium flex items-center gap-2 ${!isPaid ? "tooltip-unlock-wrap cursor-default" : ""}`}>
-              🌍 Migration route : <span className="select-none" style={{ filter: isPaid ? "none" : "blur(5px)" }}>Mediterranean to Northern Europe</span>
-              {!isPaid && <span aria-hidden>🔒</span>}
-            </span>
-            <span className={`px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-white text-sm font-medium flex items-center gap-2 ${!isPaid ? "tooltip-unlock-wrap cursor-default" : ""}`}>
-              👥 Estimated carriers : <span className="select-none" style={{ filter: isPaid ? "none" : "blur(5px)" }}>~2.4M</span>
-              {!isPaid && <span aria-hidden>🔒</span>}
-            </span>
+            {nameLoading ? (
+              <>
+                <div className="h-10 w-40 rounded-xl bg-white/10 animate-pulse" />
+                <div className="h-10 w-48 rounded-xl bg-white/10 animate-pulse" />
+                <div className="h-10 w-36 rounded-xl bg-white/10 animate-pulse" />
+              </>
+            ) : (
+              <>
+                <span className="px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-white text-sm font-medium">
+                  📍 Origin region : {nameAnalysis?.originRegion ?? shares?.[0]?.region ?? "Southern Europe"}
+                </span>
+                <span className={`px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-white text-sm font-medium flex items-center gap-2 ${!isPaid ? "tooltip-unlock-wrap cursor-default" : ""}`}>
+                  🌍 Migration route : <span className="select-none" style={{ filter: isPaid ? "none" : "blur(5px)" }}>{nameAnalysis?.migrationRoute ?? "—"}</span>
+                  {!isPaid && <span aria-hidden>🔒</span>}
+                </span>
+                <span className={`px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-white text-sm font-medium flex items-center gap-2 ${!isPaid ? "tooltip-unlock-wrap cursor-default" : ""}`}>
+                  👥 Estimated carriers : <span className="select-none" style={{ filter: isPaid ? "none" : "blur(5px)" }}>{nameAnalysis?.estimatedCarriers ?? "—"}</span>
+                  {!isPaid && <span aria-hidden>🔒</span>}
+                </span>
+              </>
+            )}
           </div>
 
-          <p className="preview-body text-[14px] mb-6">
-            The name {formData?.lastName?.trim() || "your surname"} has roots stretching back over 1,200 years. It belongs to a family of surnames that originated in the southwestern Mediterranean and spread through trade routes and historical migrations. The full etymology and migration map are available in your complete report.
-          </p>
+          {nameLoading ? (
+            <div className="space-y-2 mb-6">
+              <div className="h-4 w-full rounded bg-white/10 animate-pulse" />
+              <div className="h-4 w-full rounded bg-white/10 animate-pulse" />
+              <div className="h-4 w-[80%] rounded bg-white/10 animate-pulse" />
+            </div>
+          ) : (
+            <p className="preview-body text-[14px] mb-6">
+              {nameAnalysis?.historyParagraph ?? `The name ${formData?.lastName?.trim() || "your surname"} has roots stretching back over 1,200 years. It belongs to a family of surnames that originated in the southwestern Mediterranean and spread through trade routes and historical migrations. The full etymology and migration map are available in your complete report.`}
+            </p>
+          )}
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-white/60 text-[14px]">
               The literal meaning of {formData?.lastName?.trim() || "your name"} is
             </span>
-            <span
-              className={`inline-block px-4 py-1.5 rounded-full text-white text-sm font-medium select-none ${!isPaid ? "tooltip-unlock-wrap cursor-default bg-gray-500/50" : "bg-white/10"}`}
-              style={{ filter: isPaid ? "none" : "blur(5px)" }}
-            >
-              son of the journey
-            </span>
+            {nameLoading ? (
+              <div className="h-8 w-32 rounded-full bg-white/10 animate-pulse" />
+            ) : (
+              <span
+                className={`inline-block px-4 py-1.5 rounded-full text-white text-sm font-medium select-none ${!isPaid ? "tooltip-unlock-wrap cursor-default bg-gray-500/50" : "bg-white/10"}`}
+                style={{ filter: isPaid ? "none" : "blur(5px)" }}
+              >
+                {nameAnalysis?.meaning ?? "—"}
+              </span>
+            )}
           </div>
           </div>
         </section>
@@ -896,14 +973,17 @@ function PreviewContent() {
             Your cultural DNA
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { emoji: "🌊", title: "Mediterranean soul", desc: "Deep connection to family, food and community" },
-              { emoji: "☀️", title: "Southern warmth", desc: "Natural hospitality and emotional expressiveness" },
-              { emoji: "📚", title: "Ancient wisdom", desc: "Heir to one of the world's oldest intellectual traditions" },
-              { emoji: "🎭", title: "Artistic heritage", desc: "Creativity flows through your ancestral bloodline" },
-              { emoji: "⚓", title: "Maritime spirit", desc: "Your ancestors were explorers and traders" },
-              { emoji: "🕌", title: "Cultural crossroads", desc: "Your DNA carries the richness of civilizations meeting" },
-            ].map((trait, i) => (
+            {(Array.isArray(nameAnalysis?.culturalTraits) && nameAnalysis.culturalTraits.length > 0
+              ? (nameAnalysis.culturalTraits as string[]).slice(0, 6).map((desc, i) => ({ emoji: ["🌊", "☀️", "📚", "🎭", "⚓", "🕌"][i] ?? "✨", title: `Trait ${i + 1}`, desc }))
+              : [
+                  { emoji: "🌊", title: "Mediterranean soul", desc: "Deep connection to family, food and community" },
+                  { emoji: "☀️", title: "Southern warmth", desc: "Natural hospitality and emotional expressiveness" },
+                  { emoji: "📚", title: "Ancient wisdom", desc: "Heir to one of the world's oldest intellectual traditions" },
+                  { emoji: "🎭", title: "Artistic heritage", desc: "Creativity flows through your ancestral bloodline" },
+                  { emoji: "⚓", title: "Maritime spirit", desc: "Your ancestors were explorers and traders" },
+                  { emoji: "🕌", title: "Cultural crossroads", desc: "Your DNA carries the richness of civilizations meeting" },
+                ]
+            ).map((trait, i) => (
               <div
                 key={i}
                 className="preview-cultural-card rounded-2xl p-5 bg-white/[0.06] border border-white/10 hover:border-white/20"
