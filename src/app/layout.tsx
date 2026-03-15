@@ -15,9 +15,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "OrigineScope — Discover your true origins",
+  title: "OrigineTrace — Discover Your True Origins",
   description:
-    "Discover your true origins in 30 seconds. No DNA kit needed — just your photo and your name.",
+    "Discover your true ethnic origins in 30 seconds. No DNA kit needed. Just $4.90.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
