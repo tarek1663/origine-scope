@@ -9,11 +9,11 @@ const EARTH_IMAGE_URL =
   "https://eoimages.gsfc.nasa.gov/images/imagerecords/79000/79765/dnb_land_ocean_ice.2012.3600x1800.jpg";
   const testimonials = [
     { name: 'Sophie M.', username: '@sophie_m', country: '🇫🇷 France', img: 'https://randomuser.me/api/portraits/women/32.jpg', body: 'I always knew I had Mediterranean roots but seeing 43% North African nearly made me cry.' },
-    { name: 'Karim B.', username: '@karim_b', country: '🇧🇪 Belgium', img: 'https://randomuser.me/api/portraits/men/45.jpg', body: 'My family never talked about our origins. OrigineScope gave me a starting point.' },
+    { name: 'Karim B.', username: '@karim_b', country: '🇧🇪 Belgium', img: 'https://randomuser.me/api/portraits/men/45.jpg', body: 'My family never talked about our origins. OrigineTrace gave me a starting point.' },
     { name: 'Laura T.', username: '@laura_t', country: '🇨🇦 Canada', img: 'https://randomuser.me/api/portraits/women/68.jpg', body: 'I shared my results and 6 friends immediately tried it. We compared maps for hours.' },
     { name: 'James R.', username: '@james_r', country: '🇺🇸 USA', img: 'https://randomuser.me/api/portraits/men/22.jpg', body: '38% Irish, 29% Scottish. As an American with no clue where I came from, this was mind blowing.' },
     { name: 'Amira N.', username: '@amira_n', country: '🇲🇦 Morocco', img: 'https://randomuser.me/api/portraits/women/53.jpg', body: '51% North African and 31% Middle Eastern. Exactly what I suspected. Beautiful to see on a map.' },
-    { name: 'Diego F.', username: '@diego_f', country: '🇦🇷 Argentina', img: 'https://randomuser.me/api/portraits/men/61.jpg', body: 'My grandmother always said we had indigenous roots. OrigineScope confirmed 22%. She was right.' },
+    { name: 'Diego F.', username: '@diego_f', country: '🇦🇷 Argentina', img: 'https://randomuser.me/api/portraits/men/61.jpg', body: 'My grandmother always said we had indigenous roots. OrigineTrace confirmed 22%. She was right.' },
     { name: 'Yuki H.', username: '@yuki_h', country: '🇯🇵 Japan', img: 'https://randomuser.me/api/portraits/women/45.jpg', body: 'Surprisingly accurate. 89% East Asian with 11% Southeast Asian I never knew about.' },
     { name: 'Fatou D.', username: '@fatou_d', country: '🇸🇳 Senegal', img: 'https://randomuser.me/api/portraits/women/89.jpg', body: 'Simple, fast and emotional. I cried when I saw the map. Sent it to my whole family.' },
   ];
@@ -182,7 +182,7 @@ export default function HomePage() {
               <Link href="/legal" style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, textDecoration: 'none' }}>Legal Notice</Link>
             </div>
             <p className="text-white/20 text-xs mt-4 tracking-wide">
-              © 2026 OrigineScope. All rights reserved.
+              © 2026 OrigineTrace. All rights reserved.
             </p>
           </div>
         </FadeInSection>

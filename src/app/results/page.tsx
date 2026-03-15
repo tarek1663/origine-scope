@@ -98,11 +98,11 @@ function ResultsContent() {
 
   const handleShare = useCallback(async () => {
     if (!shares || shares.length === 0) return;
-    const text = `My origins according to OrigineScope: ${shares.map((s) => `${s.region} ${s.percentage}%`).join(", ")}. Discover yours!`;
+    const text = `My origins according to OrigineTrace: ${shares.map((s) => `${s.region} ${s.percentage}%`).join(", ")}. Discover yours!`;
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "My origins — OrigineScope",
+          title: "My origins — OrigineTrace",
           text,
           url: typeof window !== "undefined" ? window.location.origin : "",
         });
@@ -131,7 +131,7 @@ function ResultsContent() {
     ctx.fillStyle = "#2C1810";
     ctx.font = "bold 28px system-ui, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("My origins — OrigineScope", w / 2, 50);
+    ctx.fillText("My origins — OrigineTrace", w / 2, 50);
     ctx.font = "18px system-ui, sans-serif";
     const list = shares.map((s) => `${s.region}: ${s.percentage}%`).join("  ·  ");
     ctx.fillText(list, w / 2, 90);
@@ -143,7 +143,7 @@ function ResultsContent() {
       ctx.fillText(line.trim(), w / 2, 140 + i * 24);
     });
     const link = document.createElement("a");
-    link.download = "origine-scope-results.png";
+    link.download = "originetrace-results.png";
     link.href = canvas.toDataURL("image/png");
     link.click();
   }, [shares]);
@@ -242,7 +242,7 @@ function ResultsContent() {
         <canvas ref={canvasRef} className="hidden" />
 
         <p className="text-sm text-white/50 text-center leading-relaxed">
-          OrigineScope provides estimated results for entertainment purposes based on name analysis and declared family origins. This is not a DNA test.
+          OrigineTrace provides estimated results for entertainment purposes based on name analysis and declared family origins. This is not a DNA test.
         </p>
       </div>
     </main>

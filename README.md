@@ -1,4 +1,4 @@
-# OrigineScope
+# OrigineTrace
 
 Discover your true origins in 30 seconds — no DNA kit needed. A Next.js 14 web app with Stripe checkout.
 

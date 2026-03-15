@@ -31,7 +31,7 @@ export function LandingNavbar({ variant }: { variant?: "default" | "analyze" }) 
         href="/"
         className="font-heading text-white text-xl font-semibold tracking-tight transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded"
       >
-        OrigineScope
+        OrigineTrace
       </Link>
       {isAnalyze ? (
         <Link

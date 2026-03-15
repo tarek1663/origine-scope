@@ -191,11 +191,11 @@ function PreviewContent() {
 
   const handleShare = async () => {
     if (!shares || shares.length === 0) return;
-    const text = `My origins according to OrigineScope: ${shares.map((s) => `${s.region} ${s.percentage}%`).join(", ")}. Discover yours!`;
+    const text = `My origins according to OrigineTrace: ${shares.map((s) => `${s.region} ${s.percentage}%`).join(", ")}. Discover yours!`;
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "My origins — OrigineScope",
+          title: "My origins — OrigineTrace",
           text,
           url: typeof window !== "undefined" ? window.location.origin : "",
         });
