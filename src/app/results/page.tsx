@@ -10,8 +10,8 @@ import { LandingNavbar } from "@/components/LandingNavbar";
 import type { RegionKey } from "@/components/WorldMap";
 import { estimateOrigins, getRegionParagraph } from "@/lib/estimateOrigins";
 
-const PAID_FLAG_KEY = "origine-scope-paid";
-const FORM_STORAGE_KEY = "origine-scope-form";
+const PAID_FLAG_KEY = "originetrace-paid";
+const FORM_STORAGE_KEY = "originetrace-form";
 
 function loadFormData(): { lastName: string; fatherCountry: string; motherCountry: string } {
   if (typeof window === "undefined")

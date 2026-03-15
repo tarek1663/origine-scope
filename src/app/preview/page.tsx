@@ -10,7 +10,7 @@ import { LandingNavbar } from "@/components/LandingNavbar";
 import type { RegionKey } from "@/components/WorldMap";
 import { estimateOrigins, getRegionParagraph } from "@/lib/estimateOrigins";
 
-const FORM_STORAGE_KEY = "origine-scope-form";
+const FORM_STORAGE_KEY = "originetrace-form";
 const PAID_STORAGE_KEY = "origineScope_paid";
 const OFFER_EXPIRY_KEY = "origineScope_offerExpiry";
 const OFFER_DURATION_MS = 15 * 60 * 1000; // 15 minutes
