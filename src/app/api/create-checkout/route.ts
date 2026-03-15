@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const BASE_URL = "https://originetrace.com";
-
 export async function POST(req: NextRequest) {
+  console.log("=== CHECKOUT CALLED ===");
+  console.log("STRIPE_KEY exists:", !!process.env.STRIPE_SECRET_KEY);
+  console.log("STRIPE_KEY starts with:", process.env.STRIPE_SECRET_KEY?.substring(0, 10));
+
   if (!process.env.STRIPE_SECRET_KEY) {
+    console.log("ERROR: No Stripe key");
     return NextResponse.json({ error: "Stripe key missing" }, { status: 500 });
   }
 
@@ -12,9 +15,8 @@ export async function POST(req: NextRequest) {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: "2024-06-20",
     });
-    const url = new URL(req.url);
-    const expired = url.searchParams.get("expired") === "true";
-    const unitAmount = expired ? 990 : 490; // $9.90 or $4.90
+
+    console.log("Stripe initialized");
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -24,20 +26,30 @@ export async function POST(req: NextRequest) {
             currency: "usd",
             product_data: {
               name: "OrigineTrace — Full Origin Profile",
-              description: "Unlock your complete ethnic origin analysis",
             },
-            unit_amount: unitAmount,
+            unit_amount: 490,
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${BASE_URL}/preview?paid=true`,
-      cancel_url: `${BASE_URL}/preview`,
+      success_url: "https://originetrace.com/preview?paid=true",
+      cancel_url: "https://originetrace.com/preview",
     });
+
+    console.log("Session created:", session.id);
     return NextResponse.json({ url: session.url });
-  } catch (error) {
-    console.error("Checkout error:", error);
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+
+  } catch (error: unknown) {
+    const err = error as { message?: string; type?: string };
+    console.error("STRIPE ERROR:", err.message);
+    console.error("ERROR TYPE:", err.type);
+    return NextResponse.json(
+      {
+        error: err.message ?? String(error),
+        type: err.type,
+      },
+      { status: 500 }
+    );
   }
 }

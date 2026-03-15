@@ -290,9 +290,12 @@ function PreviewContent() {
   const handleUnlock = async () => {
     setLoading(true);
     try {
-      const url = expired ? "/api/create-checkout?expired=true" : "/api/create-checkout";
-      const res = await fetch(url, { method: "POST" });
-      const data = await res.json();
+      const response = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ expired }),
+      });
+      const data = await response.json();
       if (data.url) window.location.href = data.url;
       else setLoading(false);
     } catch {
