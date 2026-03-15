@@ -176,16 +176,10 @@ export default function HomePage() {
               Then <span className="font-semibold text-white/80">$4.90</span> to unlock your full results. One-time payment, no
               subscription.
             </p>
-            <div className="flex flex-wrap justify-center gap-6 mt-12 text-white/30 text-xs">
-              <Link href="/privacy" className="hover:text-white/60 transition-colors underline-offset-2 hover:underline">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="hover:text-white/60 transition-colors underline-offset-2 hover:underline">
-                Terms of Service
-              </Link>
-              <Link href="/contact" className="hover:text-white/60 transition-colors underline-offset-2 hover:underline">
-                Contact
-              </Link>
+            <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 16 }}>
+              <Link href="/privacy" style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, textDecoration: 'none' }}>Privacy Policy</Link>
+              <Link href="/terms" style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, textDecoration: 'none' }}>Terms of Service</Link>
+              <Link href="/legal" style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, textDecoration: 'none' }}>Legal Notice</Link>
             </div>
             <p className="text-white/20 text-xs mt-4 tracking-wide">
               © 2026 OrigineScope. All rights reserved.
