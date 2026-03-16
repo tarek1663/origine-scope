@@ -184,6 +184,12 @@ function PreviewContent() {
           currency: "USD",
         });
       }
+      if (typeof window !== "undefined" && (window as unknown as { ttq?: { track: (event: string, data?: object) => void } }).ttq) {
+        (window as unknown as { ttq: { track: (event: string, data?: object) => void } }).ttq.track("CompletePayment", {
+          value: 4.9,
+          currency: "USD",
+        });
+      }
       try {
         localStorage.setItem(PAID_STORAGE_KEY, "true");
       } catch {}
