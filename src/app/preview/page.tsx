@@ -178,6 +178,12 @@ function PreviewContent() {
     const fromStorage = typeof window !== "undefined" && localStorage.getItem(PAID_STORAGE_KEY) === "true";
     if (fromUrl) {
       setIsPaid(true);
+      if (typeof window !== "undefined" && (window as unknown as { fbq?: (a: string, b: string, c?: object) => void }).fbq) {
+        (window as unknown as { fbq: (a: string, b: string, c?: object) => void }).fbq("track", "Purchase", {
+          value: 4.9,
+          currency: "USD",
+        });
+      }
       try {
         localStorage.setItem(PAID_STORAGE_KEY, "true");
       } catch {}
