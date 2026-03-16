@@ -1,330 +1,330 @@
-'use client';
-
-/*
-  RECORDING INSTRUCTIONS:
-  1. Open this page in Chrome fullscreen (F11)
-  2. Use OBS Studio or Xbox Game Bar (Win+G) to record
-  3. Set recording to 1920x1080 at 30fps
-  4. Let it play for one full loop (30 seconds)
-  5. Upload to YouTube as unlisted
-  6. Add YouTube URL to Google Ads
-*/
-
-import { useEffect, useState, useCallback } from 'react';
-
-const T = 1000;
-const EARTH_BG =
-  'https://eoimages.gsfc.nasa.gov/images/imagerecords/79000/79765/dnb_land_ocean_ice.2012.3600x1800.jpg';
+"use client";
+import { useEffect, useState } from "react";
 
 export default function VideoPage() {
-  const [scene1Visible, setScene1Visible] = useState(false);
-  const [scene2Visible, setScene2Visible] = useState(false);
-  const [scene3Visible, setScene3Visible] = useState(false);
-  const [scene4Visible, setScene4Visible] = useState(false);
-  const [scene5Visible, setScene5Visible] = useState(false);
-  const [blackoutVisible, setBlackoutVisible] = useState(false);
+  const [scene, setScene] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [typed, setTyped] = useState("");
+  const [showResult, setShowResult] = useState(false);
+  const [particles, setParticles] = useState<{x:number,y:number,size:number,speed:number,opacity:number}[]>([]);
 
-  const [line1Chars, setLine1Chars] = useState<string[]>([]);
-  const [line2Chars, setLine2Chars] = useState<string[]>([]);
-  const [subtitleVisible, setSubtitleVisible] = useState(false);
+  useEffect(() => {
+    const p = Array.from({length: 80}, () => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 2 + 0.5,
+      speed: Math.random() * 0.3 + 0.1,
+      opacity: Math.random() * 0.6 + 0.2,
+    }));
+    setParticles(p);
 
-  const [stat1Visible, setStat1Visible] = useState(false);
-  const [stat2Visible, setStat2Visible] = useState(false);
-  const [stat3Visible, setStat3Visible] = useState(false);
-  const [stat1Struck, setStat1Struck] = useState(false);
-  const [stat2Struck, setStat2Struck] = useState(false);
-  const [stat3Struck, setStat3Struck] = useState(false);
+    const timeline = [
+      { time: 0, scene: 0 },
+      { time: 5000, scene: 1 },
+      { time: 10000, scene: 2 },
+      { time: 18000, scene: 3 },
+      { time: 24000, scene: 4 },
+      { time: 30000, scene: 0 },
+    ];
 
-  const [betterWayVisible, setBetterWayVisible] = useState(false);
-  const [mockupVisible, setMockupVisible] = useState(false);
-  const [analyzingText, setAnalyzingText] = useState('');
-  const [progressAnimate, setProgressAnimate] = useState(false);
-  const [resultVisible, setResultVisible] = useState(false);
+    const timers = timeline.map(({ time, scene }) =>
+      setTimeout(() => setScene(scene), time)
+    );
 
-  const [t1Visible, setT1Visible] = useState(false);
-  const [t2Visible, setT2Visible] = useState(false);
-  const [t3Visible, setT3Visible] = useState(false);
-
-  const [urgencyVisible, setUrgencyVisible] = useState(false);
-
-  const runTimeline = useCallback(() => {
-    setScene1Visible(false);
-    setScene2Visible(false);
-    setScene3Visible(false);
-    setScene4Visible(false);
-    setScene5Visible(false);
-    setBlackoutVisible(false);
-    setLine1Chars([]);
-    setLine2Chars([]);
-    setSubtitleVisible(false);
-    setStat1Visible(false);
-    setStat2Visible(false);
-    setStat3Visible(false);
-    setStat1Struck(false);
-    setStat2Struck(false);
-    setStat3Struck(false);
-    setBetterWayVisible(false);
-    setMockupVisible(false);
-    setAnalyzingText('');
-    setProgressAnimate(false);
-    setResultVisible(false);
-    setT1Visible(false);
-    setT2Visible(false);
-    setT3Visible(false);
-    setUrgencyVisible(false);
-
-    setTimeout(() => setScene1Visible(true), 100);
-
-    // Line 1 letter by letter from 1s
-    const line1 = 'Where are you';
-    line1.split('').forEach((char, i) => {
-      setTimeout(() => setLine1Chars((prev) => [...prev, char]), 1 * T + i * 80);
-    });
-
-    // Line 2 from 2s
-    const line2 = 'REALLY from?';
-    line2.split('').forEach((char, i) => {
-      setTimeout(() => setLine2Chars((prev) => [...prev, char]), 2 * T + i * 80);
-    });
-
-    setTimeout(() => setSubtitleVisible(true), 4 * T);
-
-    setTimeout(() => {
-      setScene1Visible(false);
-      setScene2Visible(true);
-    }, 5 * T);
-
-    setTimeout(() => setStat1Visible(true), 5.5 * T);
-    setTimeout(() => setStat2Visible(true), 7 * T);
-    setTimeout(() => setStat3Visible(true), 8.5 * T);
-    setTimeout(() => setStat1Struck(true), 9 * T);
-    setTimeout(() => setStat2Struck(true), 9.3 * T);
-    setTimeout(() => setStat3Struck(true), 9.6 * T);
-
-    setTimeout(() => {
-      setScene2Visible(false);
-      setScene3Visible(true);
-      setBetterWayVisible(true);
-    }, 10 * T);
-
-    setTimeout(() => {
-      setBetterWayVisible(false);
-      setMockupVisible(true);
-      const analyzing = 'Analyzing... Martinez';
-      for (let i = 0; i <= analyzing.length; i++) {
-        setTimeout(() => setAnalyzingText(analyzing.slice(0, i)), 11 * T + i * 60);
-      }
-      setProgressAnimate(true);
-    }, 11 * T);
-
-    setTimeout(() => {
-      setAnalyzingText('Analyzing... Martinez');
-      setResultVisible(true);
-    }, 13 * T);
-
-    setTimeout(() => {
-      setScene3Visible(false);
-      setScene4Visible(true);
-    }, 18 * T);
-    setTimeout(() => setT1Visible(true), 18 * T);
-    setTimeout(() => setT2Visible(true), 20 * T);
-    setTimeout(() => setT3Visible(true), 22 * T);
-
-    setTimeout(() => {
-      setScene4Visible(false);
-      setScene5Visible(true);
-    }, 24 * T);
-
-    setTimeout(() => setUrgencyVisible(true), 28 * T);
-    setTimeout(() => setBlackoutVisible(true), 29.5 * T);
-    setTimeout(() => runTimeline(), 31 * T);
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   useEffect(() => {
-    runTimeline();
-  }, [runTimeline]);
+    if (scene === 2) {
+      const text = "Martinez";
+      let i = 0;
+      setTyped("");
+      setProgress(0);
+      setShowResult(false);
+      const typing = setInterval(() => {
+        if (i < text.length) {
+          setTyped(text.slice(0, ++i));
+        } else {
+          clearInterval(typing);
+          let p = 0;
+          const bar = setInterval(() => {
+            if (p < 100) {
+              setProgress(++p);
+            } else {
+              clearInterval(bar);
+              setShowResult(true);
+            }
+          }, 20);
+        }
+      }, 100);
+      return () => clearInterval(typing);
+    }
+  }, [scene]);
 
   return (
-    <div
-      className="fixed inset-0 w-[1920px] h-[1080px] overflow-hidden bg-[#0d1117] cursor-none"
-      style={{ fontFamily: 'var(--font-playfair), "Playfair Display", serif' }}
-    >
+    <div style={{
+      position: "fixed", inset: 0, overflow: "hidden",
+      background: "#0d1117", cursor: "none",
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      {/* Particles */}
+      {particles.map((p, i) => (
+        <div key={i} style={{
+          position: "absolute",
+          left: `${p.x}%`, top: `${p.y}%`,
+          width: p.size, height: p.size,
+          borderRadius: "50%",
+          background: "white",
+          opacity: p.opacity,
+          animation: `float ${p.speed * 10}s linear infinite`,
+        }}/>
+      ))}
 
-      {/* Scene 1 — Hook */}
-      <div
-        className="absolute inset-0 transition-opacity duration-500 ease-out"
-        style={{ opacity: scene1Visible ? 1 : 0 }}
-      >
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${EARTH_BG})` }}
-        />
-        <div className="absolute inset-0 bg-black/60" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-20">
-          <div className="text-[56px] font-semibold text-white tracking-wide mb-4 min-h-[70px] flex flex-wrap justify-center">
-            {line1Chars.map((c, i) => (
-              <span key={i}>
-                {c}
-              </span>
+      {/* SCENE 0 — Hook */}
+      {scene === 0 && (
+        <div style={{
+          position: "absolute", inset: 0, display: "flex",
+          flexDirection: "column", alignItems: "center", justifyContent: "center",
+          animation: "fadeIn 0.8s ease",
+        }}>
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: "url(https://eoimages.gsfc.nasa.gov/images/imagerecords/79000/79765/dnb_land_ocean_ice.2012.3600x1800.jpg)",
+            backgroundSize: "cover", backgroundPosition: "center",
+            opacity: 0.4,
+          }}/>
+          <div style={{ position: "relative", textAlign: "center", zIndex: 1 }}>
+            <div style={{
+              fontSize: 22, color: "#C1440E", letterSpacing: 6,
+              textTransform: "uppercase", marginBottom: 24,
+              animation: "slideUp 1s ease 0.5s both",
+            }}>OrigineTrace</div>
+            <div style={{
+              fontSize: 96, fontFamily: "Playfair Display, serif",
+              color: "white", lineHeight: 1.1, fontWeight: 700,
+              animation: "slideUp 1s ease 1s both",
+            }}>Where are you</div>
+            <div style={{
+              fontSize: 96, fontFamily: "Playfair Display, serif",
+              color: "#C1440E", lineHeight: 1.1, fontWeight: 700,
+              animation: "slideUp 1s ease 1.5s both",
+              textShadow: "0 0 60px rgba(193,68,14,0.8)",
+            }}>REALLY from?</div>
+            <div style={{
+              fontSize: 24, color: "rgba(255,255,255,0.6)",
+              marginTop: 32, animation: "fadeIn 1s ease 3s both",
+            }}>Most people don&apos;t know the full story...</div>
+          </div>
+          <div style={{
+            position: "absolute", bottom: 40,
+            display: "flex", gap: 8, animation: "fadeIn 1s ease 4s both",
+          }}>
+            {[0,1,2,3,4].map(i => (
+              <div key={i} style={{
+                width: 8, height: 8, borderRadius: "50%",
+                background: i === 0 ? "#C1440E" : "rgba(255,255,255,0.3)",
+              }}/>
             ))}
           </div>
-          <div className="text-[72px] font-bold text-[#C1440E] tracking-wide min-h-[90px] flex flex-wrap justify-center">
-            {line2Chars.map((c, i) => (
-              <span key={i} style={{ opacity: 1 }}>{c}</span>
-            ))}
+        </div>
+      )}
+
+      {/* SCENE 1 — Problem */}
+      {scene === 1 && (
+        <div style={{
+          position: "absolute", inset: 0, display: "flex",
+          flexDirection: "column", alignItems: "center", justifyContent: "center",
+          gap: 40, animation: "fadeIn 0.5s ease",
+        }}>
+          <div style={{
+            fontSize: 28, color: "rgba(255,255,255,0.4)",
+            letterSpacing: 4, textTransform: "uppercase",
+            animation: "slideUp 0.8s ease both",
+          }}>Did you know?</div>
+          {[
+            { text: "Most people never find their true origins 🌍", delay: "0.3s" },
+            { text: "DNA tests cost hundreds of dollars 💸", delay: "1s" },
+            { text: "And take weeks to get results ⏳", delay: "1.7s" },
+          ].map((item, i) => (
+            <div key={i} style={{
+              fontSize: 48, color: "white", fontWeight: 700,
+              textAlign: "center", maxWidth: 800,
+              animation: `slideUp 0.8s ease ${item.delay} both`,
+            }}>
+              {item.text}
+            </div>
+          ))}
+          <div style={{
+            fontSize: 32, color: "#C1440E", fontWeight: 700,
+            animation: "slideUp 0.8s ease 2.8s both",
+            textAlign: "center",
+          }}>
+            Until now. ✨
           </div>
-          <p
-            className="absolute bottom-[180px] text-[28px] text-white/90 transition-opacity duration-[800ms] ease-out"
-            style={{ opacity: subtitleVisible ? 1 : 0 }}
-          >
-            Most people don&apos;t know the full story...
-          </p>
         </div>
-      </div>
+      )}
 
-      {/* Scene 2 — Problem */}
-      <div
-        className="absolute inset-0 bg-[#0d1117] flex flex-col items-center justify-center gap-12 p-20 transition-opacity duration-300"
-        style={{ opacity: scene2Visible ? 1 : 0, pointerEvents: scene2Visible ? 'auto' : 'none' }}
-      >
-        <div
-          className={`text-[42px] text-white transition-all duration-500 ease-out ${stat1Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[30px]'}`}
-        >
-          <span className={`video-stat-text relative inline-block ${stat1Struck ? 'video-stat-struck' : ''}`}>
-            23andMe costs $99 💸
-          </span>
-        </div>
-        <div
-          className={`text-[42px] text-white transition-all duration-500 ease-out ${stat2Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[30px]'}`}
-        >
-          <span className={`video-stat-text relative inline-block ${stat2Struck ? 'video-stat-struck' : ''}`}>
-            Results take 6-8 weeks ⏳
-          </span>
-        </div>
-        <div
-          className={`text-[42px] text-white transition-all duration-500 ease-out ${stat3Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[30px]'}`}
-        >
-          <span className={`video-stat-text relative inline-block ${stat3Struck ? 'video-stat-struck' : ''}`}>
-            Requires a DNA kit 🧬
-          </span>
-        </div>
-      </div>
+      {/* SCENE 2 — Solution */}
+      {scene === 2 && (
+        <div style={{
+          position: "absolute", inset: 0, display: "flex",
+          alignItems: "center", justifyContent: "center",
+          animation: "fadeIn 0.5s ease",
+        }}>
+          <div style={{
+            background: "rgba(255,255,255,0.04)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 24, padding: "48px 64px",
+            width: 600, textAlign: "center",
+            boxShadow: "0 0 100px rgba(193,68,14,0.3)",
+          }}>
+            <div style={{
+              fontSize: 13, color: "#C1440E", letterSpacing: 4,
+              textTransform: "uppercase", marginBottom: 32,
+            }}>OrigineTrace AI</div>
 
-      {/* Scene 3 — Solution */}
-      <div
-        className="absolute inset-0 transition-opacity duration-300"
-        style={{ opacity: scene3Visible ? 1 : 0, pointerEvents: scene3Visible ? 'auto' : 'none' }}
-      >
-        <div className="absolute inset-0 bg-[#C1440E]" />
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[72px] font-bold text-white transition-opacity duration-1000"
-          style={{ opacity: betterWayVisible ? 1 : 0 }}
-        >
-          There&apos;s a better way.
-        </div>
-        <div
-          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-1000 ${mockupVisible ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <div className="w-[520px] rounded-3xl bg-[#161b22] p-10 shadow-2xl border border-[#30363d]">
-            <div className="text-[28px] font-semibold text-white text-center mb-7">OrigineTrace</div>
-            <div className="w-40 h-40 mx-auto mb-6 rounded-full bg-[#21262d] border-[3px] border-[#C1440E] relative overflow-hidden">
-              <span
-                className="absolute w-6 h-0.5 left-1/2 -ml-3 top-5 bg-[#C1440E]"
-                style={{ animation: 'video-bracket-pulse 1.5s ease-in-out infinite' }}
-              />
-              <span
-                className="absolute w-0.5 h-6 left-5 top-1/2 -mt-3 bg-[#C1440E]"
-                style={{ animation: 'video-bracket-pulse 1.5s ease-in-out infinite' }}
-              />
+            <div style={{
+              width: 120, height: 120, borderRadius: "50%",
+              border: "3px solid #C1440E", margin: "0 auto 24px",
+              position: "relative", display: "flex",
+              alignItems: "center", justifyContent: "center",
+              boxShadow: "0 0 40px rgba(193,68,14,0.5)",
+            }}>
+              <div style={{ fontSize: 48 }}>👤</div>
+              {[0,1,2,3].map(i => (
+                <div key={i} style={{
+                  position: "absolute",
+                  width: 16, height: 16,
+                  borderTop: i < 2 ? "3px solid #C1440E" : "none",
+                  borderBottom: i >= 2 ? "3px solid #C1440E" : "none",
+                  borderLeft: i % 2 === 0 ? "3px solid #C1440E" : "none",
+                  borderRight: i % 2 === 1 ? "3px solid #C1440E" : "none",
+                  top: i < 2 ? -3 : "auto", bottom: i >= 2 ? -3 : "auto",
+                  left: i % 2 === 0 ? -3 : "auto", right: i % 2 === 1 ? -3 : "auto",
+                }}/>
+              ))}
             </div>
-            <div className="text-xl text-white/90 mb-5 min-h-[28px]">
-              {analyzingText}
-              <span
-                className="inline-block w-0.5 h-5 bg-white align-middle ml-0.5"
-                style={{ animation: 'video-blink 0.8s step-end infinite' }}
-              />
+
+            <div style={{
+              fontSize: 28, color: "white", marginBottom: 24,
+              fontFamily: "monospace",
+            }}>
+              {typed}<span style={{ animation: "blink 1s infinite" }}>|</span>
             </div>
-            <div className="h-2 bg-[#21262d] rounded overflow-hidden mb-6">
-              <div
-                className="h-full bg-[#C1440E] transition-[width] duration-[2s] ease-linear"
-                style={{ width: progressAnimate ? '100%' : '0%' }}
-              />
+
+            <div style={{
+              height: 8, background: "rgba(255,255,255,0.1)",
+              borderRadius: 4, overflow: "hidden", marginBottom: 24,
+            }}>
+              <div style={{
+                height: "100%", width: `${progress}%`,
+                background: "linear-gradient(90deg, #C1440E, #EF9F27)",
+                borderRadius: 4, transition: "width 0.02s linear",
+                boxShadow: "0 0 20px rgba(193,68,14,0.8)",
+              }}/>
             </div>
-            <div
-              className={`transition-opacity duration-700 ${resultVisible ? 'opacity-100' : 'opacity-0'}`}
-            >
-              <div
-                className="w-full h-20 rounded-lg mb-3 bg-cover bg-center opacity-80"
-                style={{ backgroundImage: `url(${EARTH_BG})` }}
-              />
-              <div className="text-base text-white text-center">
-                North African 43% · Southern European 31%
+
+            {showResult && (
+              <div style={{ animation: "scaleIn 0.5s ease" }}>
+                <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+                  {[
+                    { label: "North African", pct: "43%", color: "#EF9F27" },
+                    { label: "Southern European", pct: "31%", color: "#C1440E" },
+                    { label: "Middle Eastern", pct: "18%", color: "#3B8BD4" },
+                    { label: "Other", pct: "8%", color: "#888" },
+                  ].map((r, i) => (
+                    <div key={i} style={{
+                      background: "rgba(255,255,255,0.06)",
+                      border: `1px solid ${r.color}40`,
+                      borderLeft: `3px solid ${r.color}`,
+                      borderRadius: 8, padding: "8px 16px",
+                      color: "white", fontSize: 14,
+                    }}>
+                      <span style={{ color: r.color, fontWeight: 700 }}>{r.pct}</span> {r.label}
+                    </div>
+                  ))}
+                </div>
               </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* SCENE 3 — Social proof */}
+      {scene === 3 && (
+        <div style={{
+          position: "absolute", inset: 0, display: "flex",
+          flexDirection: "column", alignItems: "center", justifyContent: "center",
+          gap: 24, animation: "fadeIn 0.5s ease",
+        }}>
+          <div style={{
+            fontSize: 20, color: "rgba(255,255,255,0.4)",
+            letterSpacing: 4, textTransform: "uppercase", marginBottom: 16,
+          }}>What people say</div>
+          {[
+            { text: "I discovered I was 43% Berber. Mind blown.", name: "Sophie M.", flag: "🇫🇷", delay: "0s" },
+            { text: "Cheaper than 23andMe and instant results!", name: "James R.", flag: "🇺🇸", delay: "0.8s" },
+            { text: "My whole family tried it. We were shocked.", name: "Karim B.", flag: "🇧🇪", delay: "1.6s" },
+          ].map((t, i) => (
+            <div key={i} style={{
+              background: "rgba(255,255,255,0.04)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 16, padding: "20px 32px",
+              width: 560, animation: `slideLeft 0.8s ease ${t.delay} both`,
+              boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+            }}>
+              <div style={{ color: "#EF9F27", fontSize: 18, marginBottom: 8 }}>★★★★★</div>
+              <div style={{ color: "white", fontSize: 20, marginBottom: 12 }}>&quot;{t.text}&quot;</div>
+              <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 14 }}>{t.flag} {t.name}</div>
             </div>
-          </div>
+          ))}
         </div>
-      </div>
+      )}
 
-      {/* Scene 4 — Social proof */}
-      <div
-        className="absolute inset-0 bg-[#0d1117] flex items-center justify-center gap-8 p-20 transition-opacity duration-300"
-        style={{ opacity: scene4Visible ? 1 : 0, pointerEvents: scene4Visible ? 'auto' : 'none' }}
-      >
-        <div
-          className={`w-[380px] rounded-2xl bg-[#161b22] p-7 border border-[#30363d] transition-all duration-500 ease-out ${t1Visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[200px]'}`}
-        >
-          <div className="text-[22px] text-[#f0c14b] mb-3">⭐⭐⭐⭐⭐</div>
-          <div className="text-xl text-white/95 leading-relaxed mb-4">
-            &quot;I discovered I was 43% Berber. Mind blown.&quot;
-          </div>
-          <div className="text-base text-white/70">— Sophie M. 🇫🇷</div>
+      {/* SCENE 4 — CTA */}
+      {scene === 4 && (
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(135deg, #C1440E, #8B2500)",
+          display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center",
+          animation: "fadeIn 0.5s ease",
+        }}>
+          <div style={{
+            fontSize: 96, fontFamily: "Playfair Display, serif",
+            color: "white", fontWeight: 700, textAlign: "center",
+            lineHeight: 1.1, animation: "scaleIn 0.8s ease both",
+            textShadow: "0 4px 40px rgba(0,0,0,0.3)",
+          }}>Discover your<br/>origins</div>
+          <div style={{
+            fontSize: 28, color: "rgba(255,255,255,0.8)",
+            marginTop: 24, animation: "slideUp 0.8s ease 0.5s both",
+          }}>30 seconds · No DNA kit · Only $4.90</div>
+          <div style={{
+            marginTop: 40, background: "white", color: "#C1440E",
+            padding: "20px 48px", borderRadius: 50,
+            fontSize: 24, fontWeight: 700,
+            animation: "scaleIn 0.8s ease 1s both",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+          }}>Try it now → originetrace.com</div>
+          <div style={{
+            marginTop: 32, color: "rgba(255,255,255,0.7)",
+            fontSize: 18, animation: "fadeIn 1s ease 2s both",
+          }}>⚡ 4,847 people discovered their origins this week</div>
         </div>
-        <div
-          className={`w-[380px] rounded-2xl bg-[#161b22] p-7 border border-[#30363d] transition-all duration-500 ease-out ${t2Visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[200px]'}`}
-        >
-          <div className="text-[22px] text-[#f0c14b] mb-3">⭐⭐⭐⭐⭐</div>
-          <div className="text-xl text-white/95 leading-relaxed mb-4">
-            &quot;Cheaper than 23andMe and instant results!&quot;
-          </div>
-          <div className="text-base text-white/70">— James R. 🇺🇸</div>
-        </div>
-        <div
-          className={`w-[380px] rounded-2xl bg-[#161b22] p-7 border border-[#30363d] transition-all duration-500 ease-out ${t3Visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[200px]'}`}
-        >
-          <div className="text-[22px] text-[#f0c14b] mb-3">⭐⭐⭐⭐⭐</div>
-          <div className="text-xl text-white/95 leading-relaxed mb-4">
-            &quot;My whole family tried it. We were shocked.&quot;
-          </div>
-          <div className="text-base text-white/70">— Karim B. 🇧🇪</div>
-        </div>
-      </div>
+      )}
 
-      {/* Scene 5 — CTA */}
-      <div
-        className="absolute inset-0 bg-[#C1440E] flex flex-col items-center justify-center p-20 transition-opacity duration-1000"
-        style={{ opacity: scene5Visible ? 1 : 0, pointerEvents: scene5Visible ? 'auto' : 'none' }}
-      >
-        <div className="text-[64px] font-bold text-white mb-5">Discover your origins</div>
-        <div className="text-[28px] text-white/95 mb-4">30 seconds · No DNA kit · Only $4.90</div>
-        <div
-          className="mt-6 px-12 py-4 bg-white text-[#C1440E] text-2xl font-semibold rounded-xl"
-          style={{ animation: 'video-pulse-btn 1.5s ease-in-out infinite' }}
-        >
-          Try it now → originetrace.com
-        </div>
-        <p
-          className="absolute bottom-[120px] text-2xl text-white/95 transition-opacity duration-500"
-          style={{ opacity: urgencyVisible ? 1 : 0 }}
-        >
-          ⚡ 4,847 people discovered their origins this week
-        </p>
-      </div>
-
-      {/* Blackout */}
-      <div
-        className="fixed inset-0 bg-black z-[100] transition-opacity duration-[1500ms] ease-out"
-        style={{ opacity: blackoutVisible ? 1 : 0, pointerEvents: 'none' }}
-      />
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px) } to { opacity: 1; transform: translateY(0) } }
+        @keyframes slideLeft { from { opacity: 0; transform: translateX(60px) } to { opacity: 1; transform: translateX(0) } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.8) } to { opacity: 1; transform: scale(1) } }
+        @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: 0 } }
+        @keyframes strikethrough { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+        @keyframes float { 0% { transform: translateY(0) } 100% { transform: translateY(-100vh) } }
+      `}</style>
     </div>
   );
 }
